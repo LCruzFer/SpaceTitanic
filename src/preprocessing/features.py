@@ -1,10 +1,9 @@
 from pathlib import Path
 import pandas as pd
-import preprocessing_functions as pf
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, Normalizer
 
-def impute(data, method: str = 'median', ):
+def impute(data, method: str = 'median', **impute_kawrgs):
     '''
     Impute missing values using specified methods.
     '''
@@ -15,7 +14,7 @@ def impute(data, method: str = 'median', ):
 
 def scaling(data, method: str = "standardize"):
     '''
-    Scale provdied data using specified method.
+    Scale provided data using specified method.
     '''
     if method == "standardize":
         scaler = StandardScaler()
@@ -28,6 +27,7 @@ def scaling(data, method: str = "standardize"):
     
     return scaler.transform(data)
 
+
 #set filepath and names
 data_in = Path.cwd()/'data'/'raw'
 train_fname = "train.csv"
@@ -35,4 +35,3 @@ data_out = Path.cwd()/'data'/'processed'
 
 #read in data
 train = pd.read_csv(data_in/train_fname)
-
