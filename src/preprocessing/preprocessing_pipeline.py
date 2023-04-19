@@ -1,59 +1,34 @@
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, FunctionTransformer
+from sklearn.compose import ColumnTransformer
 import numpy as np
 import pandas as pd
 
-def split_col(df: pd.DataFrame, split_col: str, delim: str, new_cols: list[str]):
-    '''
-    Split a column containing a string into to new columns.
-    
-    *df: pd.DataFrame
-    *split_col: str
-        Column that should be split.
-    *delim: str
-        Delimiter to split on.
-    *new_cols: list[str]
-        Names of new columns added by split.
-    '''
-    df[new_cols] = df[split_col].str.split(delim, n=1, expand=True)
-    
-    return df
+def rm_dups(df: pd.DataFrame):
+    return df.drop_duplicates()
 
-def get_family_identifier(df: pd.DataFrame):
-    '''
-    Construct identifier for families. Passengers are considered to be part of the same family if they are part of the same group and have the same last name.
-    '''
-    df = train
-    #creating necessary columns 
-    #! this step should be happening somewhere else later
-    df = split_col(df, 'PassengerId', '_', ['gggg', 'pp'])
-    df = split_col(df, 'Name', ' ', ['FirstName', 'LastName'])
-    #create family ID
-    df['FamilyId'] = df.groupby(['gggg', 'LastName']).cumcount()+1
-    
-    return df
-
-def gen_features(df):
-    '''
-    Wrapper function to generate new features.
-    '''
-    df = get_family_identifier(df)
-    
-    return df
-
-
+def rm_missing(df: pd.DataFrame):
+    return df.dropna()
 
 train = pd.read_csv('/Users/lucascruzfernandez/Documents/space_titanic/data/raw/train.csv')
 
-new_features = get_family_identifier(train)
+#define lists of variables by type 
+categoricals = ['HomePlanet', 'Cabin', 'Destination', 'Name', 'FirstName', 'LastName']
+booleans = ['CryoSleep', 'VIP']
+numericals = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
+#define target variable
+target = ['Transported']
 
-new_features['FamilyId']
-
+#set keywords for imputation and scaling steps
 impute_kwargs = {'missing_values': np.nan, 'strategy': 'median'}
 scaler_kwargs = {}
 
-pipe = [('impute', SimpleImputer(**impute_kwargs)), 
+ft = FunctionTransformer(rm_dups)
+ct = ColumnTransformer(transformers=['impute', SimpleImputer(**impute_kwargs), ])
+
+pipe = [('remove_duplicates', ct), 
+        ('impute', SimpleImputer(**impute_kwargs)), 
         ('scaler', StandardScaler())]
 
 pipeline = Pipeline(pipe)
