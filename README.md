@@ -10,10 +10,10 @@ The task of the Spaceship Titanic challenge is to predict which passengers of th
 To get a first simple model running I will keep preprocessing and feature engineering to a minimum and then iteratively improve the process.
 
 Iteration 1:
-    - remove duplicates from data
-    - drop all rows containing missing values
-    - use imputation for numerical values only and only use simple 'median' imputation
-    - scale numerical features
+- remove duplicates from data
+- drop all rows containing missing values
+- use imputation for numerical values only and only use simple 'median' imputation    
+- scale numerical features
 
 Iteration 2:
-    -
+-
