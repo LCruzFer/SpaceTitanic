@@ -51,7 +51,7 @@ if __name__ == "__main__":
     feat_names = comp_pipe[-1].get_feature_names_out()
     train_pp_df = pd.DataFrame(train_pp, columns=feat_names)
     test_pp_df = pd.DataFrame(test_pp, columns=feat_names)
-    
+
     # save results
     train_pp_df.to_csv(data_out / train_out_fname, sep=";")
     test_pp_df.to_csv(data_out / test_out_fname, sep=";")
