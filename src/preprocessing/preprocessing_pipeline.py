@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer, make_column_transformer
-from sklearn.preprocessing import StandardScaler, FunctionTransformer, OrdinalEncoder
+from sklearn.preprocessing import StandardScaler, FunctionTransformer, OneHotEncoder
 from sklearn.impute import SimpleImputer
 import pandas as pd
 
@@ -13,19 +13,25 @@ def rm_missings(df: pd.DataFrame):
     return df.dropna()
 
 
-def setup_clean_pipeline():
+def setup_clean_pipeline(missings: bool = False):
     """
     Set up pipeline to clean data before other processing steps.
 
-    This is currently iteration 1: removing duplicates and just remove missings
-    #! imputation steps will have no effect in pipeline
+    This is currently iteration 1: removing duplicates and decide if missings should just be removed
     """
-    clean_pipeline = Pipeline(
-        [
-            ("rm_dups", FunctionTransformer(rm_duplicates)),
-            ("rm_missings", FunctionTransformer(rm_missings)),
-        ]
-    )
+    if missings:        
+        clean_pipeline = Pipeline(
+            [
+                ("rm_dups", FunctionTransformer(rm_duplicates)),
+                ("rm_missings", FunctionTransformer(rm_missings)),
+            ]
+        )
+    else:
+        clean_pipeline = Pipeline(
+            [
+                ("rm_dups", FunctionTransformer(rm_duplicates)),
+            ]
+        )
 
     return clean_pipeline
 
@@ -56,12 +62,12 @@ def setup_cat_pipeline(enc_kwargs):
     """
     Set up pipeline to process categorical data.
     Steps taken:
-        - Encoding of categorical variables into integer
+        - one hot encoding of categorical features
 
     *enc_kwargs: dict
         Arguments to pass to encoding function.
     """
-    cat_enc = Pipeline(OrdinalEncoder(**enc_kwargs))
+    cat_enc = Pipeline([("encoder", OneHotEncoder(**enc_kwargs))])
 
     return cat_enc
 
@@ -79,7 +85,7 @@ def setup_complete_pipeline(clean_pipe, num_pipe, cat_pipe, num_vars, cat_vars):
     """
     comp_pipeline = Pipeline(
         [
-            ("cleaning", clean_pipe),
+            #("cleaning", clean_pipe),
             (
                 "column_specific",
                 ColumnTransformer(
