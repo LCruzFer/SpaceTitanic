@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 import lightgbm as lgb
 from sklearn.model_selection import train_test_split
-from training_functions import evaluate
+from model.training_functions import evaluate
 import datetime
 
 # set paths
