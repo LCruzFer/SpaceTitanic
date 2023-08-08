@@ -63,16 +63,21 @@ valid_dataset = lgb.Dataset(X_valid, label=y_valid)
 test_dataset = lgb.Dataset(X_test, label=y_test)
 
 # set up model parameters
-model_params = {"objective": "binary", "metric": "binary_logloss"}
+model_params = {
+    "objective": "binary",
+    "metric": "binary_logloss",
+    "learning_rate": 0.001,
+    #"num_leaves": 10,
+}
 num_round = 10000
 
 # train model and predict values of validation set
 bst = lgb.train(model_params, train_dataset, num_round, valid_sets=[test_dataset])
-preds = bst.predict(X_test, prediction_type="class")
+preds = bst.predict(X_valid, prediction_type="class")
 # convert probabilities to binary class
 preds_binary = (preds > 0.5).astype(int)
 
 # evaluate model
-eval_scores = evaluate(test_df[target], preds_binary)
+eval_scores = evaluate(valid_df[target], preds_binary)
 eval_scores_df = pd.DataFrame.from_dict(eval_scores, orient="index", columns=["score"])
 print(eval_scores)
